@@ -1,0 +1,2 @@
+# Eurusd-data
+Historical prices 
