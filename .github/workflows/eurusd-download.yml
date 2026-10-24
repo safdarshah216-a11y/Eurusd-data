@@ -1,0 +1,26 @@
+name: Download EURUSD M1 data
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Download 19-23 October EURUSD M1 bid candles (UTC)
+        run: |
+          npx --yes dukascopy-node -i eurusd -from 2026-10-19 -to 2026-10-24 -t m1 -p bid -utc 0 -f csv -dir download --retries 3
+          find download -type f -name '*.csv' -print
+          test -n "$(find download -type f -name '*.csv' -print -quit)"
+      - name: Upload downloaded CSV
+        uses: actions/upload-artifact@v4
+        with:
+          name: EURUSD-M1-2026-10-19-to-23
+          path: download/*.csv
+          if-no-files-found: error
+          retention-days: 7
